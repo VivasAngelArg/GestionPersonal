@@ -9,19 +9,14 @@
 <body>
 
     <!-- ==========================================
-         CONTENEDOR PRINCIPAL DE LA APP
-         ========================================== -->
+        CONTENEDOR PRINCIPAL DE LA APP
+        ========================================== -->
     <div class="app-container">
-
         <!-- 1. BARRA SUPERIOR (Top Nav) -->
         <header class="top-bar">
             <!-- Izquierda: Menú y Logo -->
             <div class="top-bar-left">
                 <button class="btn-menu" aria-label="Menú principal">☰</button>
-                <div class="logo">
-                    <span class="logo-icon">14</span>
-                    <span class="logo-text">Calendar</span>
-                </div>
             </div>
 
             <!-- Centro: Navegación de Fechas -->
@@ -67,24 +62,13 @@
                 <div class="mini-calendar">
                     <!-- Aquí iría una cuadrícula pequeñita del mes -->
                 </div>
-
-                <!-- Filtros: Mis Calendarios -->
+                <!-- Filtros: Mis Categoria dinámicos -->
                 <details class="calendar-group" open>
-                    <summary>Mis calendarios</summary>
-                    <ul class="calendar-list">
-                        <li><label><input type="checkbox" checked> 🏋️‍♂️ Powerlifting</label></li>
-                        <li><label><input type="checkbox" checked> 🥗 Comidas</label></li>
-                        <li><label><input type="checkbox" checked> 🔄 Rutinas</label></li>
-                        <li><label><input type="checkbox" checked> 💡 Ideas</label></li>
+                    <summary>Categoria</summary>
+                    <ul class="calendar-list" id="categoryList">
+                        <!-- JS inyectará las categorías aquí -->
                     </ul>
-                </details>
-
-                <!-- Filtros: Otros Calendarios -->
-                <details class="calendar-group" open>
-                    <summary>Otros calendarios</summary>
-                    <ul class="calendar-list">
-                        <li><label><input type="checkbox" checked> Festivos en Argentina</label></li>
-                    </ul>
+                    <button class="btn-new-category" id="btnOpenCategoryModal">+ Nueva Categoría</button>
                 </details>
             </aside>
 
@@ -104,48 +88,6 @@
 
                 <!-- Cuadrícula de fechas (Celdas) -->
                 <div class="month-grid">
-                    
-                    <!-- Fila 1 (Ejemplo de finales de agosto a principios de septiembre) -->
-                    <div class="day-cell inactive-month"> <span class="date">30</span> </div>
-                    <div class="day-cell inactive-month"> <span class="date">31</span> </div>
-                    <div class="day-cell"> <span class="date">1 de sept</span> </div>
-                    <div class="day-cell"> <span class="date">2</span> </div>
-                    <div class="day-cell"> <span class="date">3</span> </div>
-                    <div class="day-cell"> <span class="date">4</span> </div>
-                    <div class="day-cell"> <span class="date">5</span> </div>
-
-                    <!-- Fila 2 -->
-                    <div class="day-cell"> <span class="date">6</span> </div>
-                    <div class="day-cell"> <span class="date">7</span> </div>
-                    <div class="day-cell"> <span class="date">8</span> </div>
-                    <div class="day-cell"> <span class="date">9</span> </div>
-                    <div class="day-cell"> <span class="date">10</span> </div>
-                    <div class="day-cell"> 
-                        <span class="date">11</span> 
-                        <div class="event-chip">Año Nuevo Ju</div>
-                    </div>
-                    <div class="day-cell"> 
-                        <span class="date">12</span>
-                        <div class="event-chip">Año Nuevo Ju</div>
-                    </div>
-
-                    <!-- Fila 3 (Con el día "Hoy" activo) -->
-                    <div class="day-cell"> 
-                        <span class="date">13</span>
-                        <div class="event-chip">Año Nuevo Ju</div>
-                    </div>
-                    <!-- ESTE ES EL DÍA ACTUAL MARCADO (14) -->
-                    <div class="day-cell today"> 
-                        <span class="date active-circle">14</span>
-                        <div class="event-chip event-task">✅ 3 tareas p...</div>
-                    </div>
-                    <div class="day-cell"> <span class="date">15</span> </div>
-                    <div class="day-cell"> <span class="date">16</span> </div>
-                    <div class="day-cell"> <span class="date">17</span> </div>
-                    <div class="day-cell"> <span class="date">18</span> </div>
-                    <div class="day-cell"> <span class="date">19</span> </div>
-
-                    <!-- Aquí continuarían las Filas 4 y 5 siguiendo la misma lógica... -->  
                 </div>
                 <!-- ==========================================
                     POPOVER (TARJETA FLOTANTE) PARA CREAR EVENTOS
@@ -156,10 +98,17 @@
                         <button class="close-btn">&times;</button>
                     </div>
                     <form id="eventForm">
+                        <input type="hidden" id="eventId">
                         <input type="hidden" id="eventDate"> 
-                        
+
                         <div class="form-group">
                             <input type="text" id="eventTitle" placeholder="Añade un título" required autocomplete="off" class="title-input">
+                        </div>
+                            <!-- NUEVO: Selector de categoría -->
+                        <div class="form-group">
+                            <select id="eventCategory" required>
+                            <!-- JS inyectará las opciones aquí -->
+                            </select>
                         </div>
 
                         <div class="form-group time-group">
@@ -177,13 +126,47 @@
                             <textarea id="eventDesc" placeholder="Añade una descripción o detalles..." rows="3"></textarea>
                         </div>
 
-                        <button type="submit" class="btn-save">Guardar</button>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save" id="btnSaveEvent">Guardar</button>
+                            <button type="button" class="btn-delete hidden" id="btnDeleteEvent">Borrar</button>
+                        </div>
                     </form>
                 </div>
             </main>
-
         </div> <!-- Cierre main-content -->
-    </div> <!-- Cierre app-container -->
-    <script src="/src/js/calendar.js"></script>
+        <!-- MODAL PARA CREAR CATEGORÍAS -->
+            <div id="categoryModal" class="popover hidden"> <!-- Reutilizamos estilos del popover -->
+                <div class="popover-header">
+                    <h2>Nueva Categoría</h2>
+                    <button class="close-category-btn">&times;</button>
+                </div>
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label for="catName">Nombre de la Categoría</label>
+                        <input type="text" id="catName" placeholder="Ej: Cardio" required autocomplete="off">
+                    </div>
+                    <input type="hidden" id="catId"> <!-- NUEVO: Campo oculto para saber si editamos -->
+                    <div class="form-group">
+                        <label for="catColor">Color representativo</label>
+                        <input type="color" id="catColor" value="#fff" required>
+                        <button type="submit" class="btn-save">Guardar Categoría</button>
+                    </div>
+                 </form>
+            </div>
+        <!-- ==========================================
+         MODAL DE ALERTA Y CONFIRMACIÓN
+         ========================================== -->
+        <div id="confirmModal" class="overlay-modal hidden">
+            <div class="overlay-content">
+                <h2 id="confirmTitle">Confirmación</h2>
+                <p id="confirmMessage" style="margin: 15px 0; color: var(--text-secondary);"></p>
+                <div class="form-actions" style="justify-content: center; margin-top: 20px;">
+                    <button class="btn-save" id="btnConfirmOk">Aceptar</button>
+                    <button class="btn-delete" id="btnConfirmCancel">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Cierre app-container -->  
+    <script src="src/js/calendar.js"></script>
 </body>
 </html>
