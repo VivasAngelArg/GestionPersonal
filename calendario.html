@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario - Sistema de Gestión Personal</title>
+    <link rel="stylesheet" href="css/calendar.css">
+</head>
+<body>
+
+    <!-- ==========================================
+         CONTENEDOR PRINCIPAL DE LA APP
+         ========================================== -->
+    <div class="app-container">
+
+        <!-- 1. BARRA SUPERIOR (Top Nav) -->
+        <header class="top-bar">
+            <!-- Izquierda: Menú y Logo -->
+            <div class="top-bar-left">
+                <button class="btn-menu" aria-label="Menú principal">☰</button>
+                <div class="logo">
+                    <span class="logo-icon">14</span>
+                    <span class="logo-text">Calendar</span>
+                </div>
+            </div>
+
+            <!-- Centro: Navegación de Fechas -->
+            <div class="top-bar-center">
+                <button class="btn-today">Hoy</button>
+                <button class="btn-nav" aria-label="Anterior">&lt;</button>
+                <button class="btn-nav" aria-label="Siguiente">&gt;</button>
+                <h1 class="current-month">Septiembre de 2026</h1>
+            </div>
+
+            <!-- Derecha: Buscador, Ajustes, Vistas y Perfil -->
+            <div class="top-bar-right">
+                <button class="btn-icon" aria-label="Buscar">🔍</button>
+                <button class="btn-icon" aria-label="Ayuda">❓</button>
+                <button class="btn-icon" aria-label="Configuración">⚙️</button>
+                
+                <select class="view-selector">
+                    <option value="day">Día</option>
+                    <option value="week">Semana</option>
+                    <option value="month" selected>Mes</option>
+                    <option value="year">Año</option>
+                </select>
+                
+                <div class="user-profile">
+                    <!-- Foto o Inicial del usuario -->
+                </div>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             ÁREA DE CONTENIDO (Layout dividido en 2)
+             ========================================== -->
+        <div class="main-content">
+
+            <!-- 2. BARRA LATERAL IZQUIERDA (Sidebar) -->
+            <aside class="sidebar">
+                <!-- Botón Crear -->
+                <button class="btn-create">
+                    <span class="plus-icon">+</span> Crear
+                </button>
+
+                <!-- Mini Calendario de navegación rápida -->
+                <div class="mini-calendar">
+                    <!-- Aquí iría una cuadrícula pequeñita del mes -->
+                </div>
+
+                <!-- Filtros: Mis Calendarios -->
+                <details class="calendar-group" open>
+                    <summary>Mis calendarios</summary>
+                    <ul class="calendar-list">
+                        <li><label><input type="checkbox" checked> 🏋️‍♂️ Powerlifting</label></li>
+                        <li><label><input type="checkbox" checked> 🥗 Comidas</label></li>
+                        <li><label><input type="checkbox" checked> 🔄 Rutinas</label></li>
+                        <li><label><input type="checkbox" checked> 💡 Ideas</label></li>
+                    </ul>
+                </details>
+
+                <!-- Filtros: Otros Calendarios -->
+                <details class="calendar-group" open>
+                    <summary>Otros calendarios</summary>
+                    <ul class="calendar-list">
+                        <li><label><input type="checkbox" checked> Festivos en Argentina</label></li>
+                    </ul>
+                </details>
+            </aside>
+
+            <!-- 3. CUADRÍCULA PRINCIPAL (Vista Mensual) -->
+            <main class="calendar-month-view">
+                
+                <!-- Encabezado: Días de la semana -->
+                <div class="month-header">
+                    <div class="day-name">LUN</div>
+                    <div class="day-name">MAR</div>
+                    <div class="day-name">MIÉ</div>
+                    <div class="day-name">JUE</div>
+                    <div class="day-name">VIE</div>
+                    <div class="day-name">SÁB</div>
+                    <div class="day-name">DOM</div>
+                </div>
+
+                <!-- Cuadrícula de fechas (Celdas) -->
+                <div class="month-grid">
+                    
+                    <!-- Fila 1 (Ejemplo de finales de agosto a principios de septiembre) -->
+                    <div class="day-cell inactive-month"> <span class="date">30</span> </div>
+                    <div class="day-cell inactive-month"> <span class="date">31</span> </div>
+                    <div class="day-cell"> <span class="date">1 de sept</span> </div>
+                    <div class="day-cell"> <span class="date">2</span> </div>
+                    <div class="day-cell"> <span class="date">3</span> </div>
+                    <div class="day-cell"> <span class="date">4</span> </div>
+                    <div class="day-cell"> <span class="date">5</span> </div>
+
+                    <!-- Fila 2 -->
+                    <div class="day-cell"> <span class="date">6</span> </div>
+                    <div class="day-cell"> <span class="date">7</span> </div>
+                    <div class="day-cell"> <span class="date">8</span> </div>
+                    <div class="day-cell"> <span class="date">9</span> </div>
+                    <div class="day-cell"> <span class="date">10</span> </div>
+                    <div class="day-cell"> 
+                        <span class="date">11</span> 
+                        <div class="event-chip">Año Nuevo Ju</div>
+                    </div>
+                    <div class="day-cell"> 
+                        <span class="date">12</span>
+                        <div class="event-chip">Año Nuevo Ju</div>
+                    </div>
+
+                    <!-- Fila 3 (Con el día "Hoy" activo) -->
+                    <div class="day-cell"> 
+                        <span class="date">13</span>
+                        <div class="event-chip">Año Nuevo Ju</div>
+                    </div>
+                    <!-- ESTE ES EL DÍA ACTUAL MARCADO (14) -->
+                    <div class="day-cell today"> 
+                        <span class="date active-circle">14</span>
+                        <div class="event-chip event-task">✅ 3 tareas p...</div>
+                    </div>
+                    <div class="day-cell"> <span class="date">15</span> </div>
+                    <div class="day-cell"> <span class="date">16</span> </div>
+                    <div class="day-cell"> <span class="date">17</span> </div>
+                    <div class="day-cell"> <span class="date">18</span> </div>
+                    <div class="day-cell"> <span class="date">19</span> </div>
+
+                    <!-- Aquí continuarían las Filas 4 y 5 siguiendo la misma lógica... -->  
+                </div>
+                <!-- ==========================================
+                    POPOVER (TARJETA FLOTANTE) PARA CREAR EVENTOS
+                    ========================================== -->
+                <div id="eventPopover" class="popover hidden">
+                    <div class="popover-header">
+                        <h2>AGENDAR</h2>
+                        <button class="close-btn">&times;</button>
+                    </div>
+                    <form id="eventForm">
+                        <input type="hidden" id="eventDate"> 
+                        
+                        <div class="form-group">
+                            <input type="text" id="eventTitle" placeholder="Añade un título" required autocomplete="off" class="title-input">
+                        </div>
+
+                        <div class="form-group time-group">
+                            <div>
+                                <label for="eventStart">Inicio</label>
+                                <input type="time" id="eventStart" required>
+                            </div>
+                            <div>
+                                <label for="eventEnd">Fin</label>
+                                <input type="time" id="eventEnd" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <textarea id="eventDesc" placeholder="Añade una descripción o detalles..." rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-save">Guardar</button>
+                    </form>
+                </div>
+            </main>
+
+        </div> <!-- Cierre main-content -->
+    </div> <!-- Cierre app-container -->
+    <script src="/src/js/calendar.js"></script>
+</body>
+</html>
