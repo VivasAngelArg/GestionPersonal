@@ -3,127 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario - Sistema de Gestión Personal</title>
+    <title>Calendario Organizador - Sistema de Gestión Personal</title>
     <link rel="stylesheet" href="css/calendar.css">
 </head>
 <body>
 
-    <!-- ==========================================
-        CONTENEDOR PRINCIPAL DE LA APP
-        ========================================== -->
     <div class="app-container">
-        <!-- 1. BARRA SUPERIOR (Top Nav) -->
+        <!-- BARRA SUPERIOR -->
         <header class="top-bar">
-            <!-- Izquierda: Menú y Logo -->
             <div class="top-bar-left">
                 <button class="btn-menu" aria-label="Menú principal">☰</button>
             </div>
 
-            <!-- Centro: Navegación de Fechas -->
             <div class="top-bar-center">
-                <button class="btn-today">Hoy</button>
                 <button class="btn-nav" aria-label="Anterior">&lt;</button>
-                <button class="btn-nav" aria-label="Siguiente">&gt;</button>
                 <h1 class="current-month">Septiembre de 2026</h1>
+                <button class="btn-nav" aria-label="Siguiente">&gt;</button>
+                 <button class="btn-today">Hoy</button>
             </div>
 
-            <!-- Derecha: Buscador, Ajustes, Vistas y Perfil -->
             <div class="top-bar-right">
-                <button class="btn-icon" aria-label="Buscar">🔍</button>
-                <button class="btn-icon" aria-label="Ayuda">❓</button>
-                <button class="btn-icon" aria-label="Configuración">⚙️</button>
-                
                 <select class="view-selector">
-                    <option value="day">Día</option>
-                    <option value="week">Semana</option>
                     <option value="month" selected>Mes</option>
-                    <option value="year">Año</option>
                 </select>
-                
-                <div class="user-profile">
-                    <!-- Foto o Inicial del usuario -->
-                </div>
             </div>
         </header>
 
-        <!-- ==========================================
-             ÁREA DE CONTENIDO (Layout dividido en 2)
-             ========================================== -->
+        <!-- ÁREA PRINCIPAL -->
         <div class="main-content">
-
-            <!-- 2. BARRA LATERAL IZQUIERDA (Sidebar) -->
+            <!-- BARRA LATERAL -->
             <aside class="sidebar">
-                <!-- Botón Crear -->
-                <button class="btn-create">
-                    <span class="plus-icon">+</span> Crear
-                </button>
-
-                <!-- Mini Calendario de navegación rápida -->
-                <div class="mini-calendar">
-                    <!-- Aquí iría una cuadrícula pequeñita del mes -->
-                </div>
-                <!-- Filtros: Mis Categoria dinámicos -->
                 <details class="calendar-group" open>
-                    <summary>Categoria</summary>
+                    <summary>Categorías / Filtros</summary>
                     <ul class="calendar-list" id="categoryList">
-                        <!-- JS inyectará las categorías aquí -->
+                        <!-- Carga dinámica vía JS -->
                     </ul>
                     <button class="btn-new-category" id="btnOpenCategoryModal">+ Nueva Categoría</button>
                 </details>
+            <!-- Copia de Seguridad Desplegable -->
+                <details class="calendar-group sidebar-backup-section" open>
+                    <summary>Copia de Seguridad</summary>
+                    <div class="backup-content">
+                        <button id="btnExportBackup" class="btn-backup">📥 Exportar Backup</button>
+                        <button id="btnImportBackup" class="btn-backup btn-backup-import">📤 Importar Backup</button>
+                        <input type="file" id="fileImportBackup" accept=".json" style="display: none;">
+                    </div>
+</details>
             </aside>
 
-            <!-- 3. CUADRÍCULA PRINCIPAL (Vista Mensual) -->
+            <!-- CUADRÍCULA DEL CALENDARIO -->
             <main class="calendar-month-view">
-                
-                <!-- Encabezado: Días de la semana -->
                 <div class="month-header">
+                    <div class="day-name">DOM</div>
                     <div class="day-name">LUN</div>
                     <div class="day-name">MAR</div>
                     <div class="day-name">MIÉ</div>
                     <div class="day-name">JUE</div>
                     <div class="day-name">VIE</div>
                     <div class="day-name">SÁB</div>
-                    <div class="day-name">DOM</div>
                 </div>
 
-                <!-- Cuadrícula de fechas (Celdas) -->
-                <div class="month-grid">
+                <div class="month-grid" id="monthGrid">
+                    <!-- Días inyectados por JS -->
                 </div>
-                <!-- ==========================================
-                    POPOVER (TARJETA FLOTANTE) PARA CREAR EVENTOS
-                    ========================================== -->
+
+                <!-- PALETA DE MODO PINTAR -->
+                <div id="paintPalette" class="paint-palette hidden">
+                    <span class="palette-title">Preset activo:</span>
+                    <div id="presetChipsContainer" class="palette-chips">
+                        <!-- Chips por JS -->
+                    </div>
+                </div>
+
+                <!-- POPOVER AGENDAR EVENTO / NOTA -->
                 <div id="eventPopover" class="popover hidden">
                     <div class="popover-header">
-                        <h2>AGENDAR</h2>
+                        <h2 id="popoverTitle">AGENDAR</h2>
                         <button class="close-btn">&times;</button>
                     </div>
                     <form id="eventForm">
                         <input type="hidden" id="eventId">
-                        <input type="hidden" id="eventDate"> 
+                        <input type="hidden" id="eventDate">
 
                         <div class="form-group">
-                            <input type="text" id="eventTitle" placeholder="Añade un título" required autocomplete="off" class="title-input">
+                            <input type="text" id="eventTitle" placeholder="Título (Ej: Trabajo, Consulta, Franco)" required autocomplete="off" class="title-input">
                         </div>
-                            <!-- NUEVO: Selector de categoría -->
+
                         <div class="form-group">
+                            <label for="eventCategory">Categoría</label>
                             <select id="eventCategory" required>
-                            <!-- JS inyectará las opciones aquí -->
+                                <!-- Inyectado por JS -->
                             </select>
                         </div>
 
                         <div class="form-group time-group">
                             <div>
-                                <label for="eventStart">Inicio</label>
-                                <input type="time" id="eventStart" required>
+                                <label for="eventStart">Hora Inicio</label>
+                                <input type="time" id="eventStart">
                             </div>
                             <div>
-                                <label for="eventEnd">Fin</label>
-                                <input type="time" id="eventEnd" required>
+                                <label for="eventEnd">Hora Fin</label>
+                                <input type="time" id="eventEnd">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <textarea id="eventDesc" placeholder="Añade una descripción o detalles..." rows="3"></textarea>
+                            <textarea id="eventDesc" placeholder="Notas adicionales o recordatorios..." rows="3"></textarea>
                         </div>
 
                         <div class="form-actions">
@@ -133,40 +118,69 @@
                     </form>
                 </div>
             </main>
-        </div> <!-- Cierre main-content -->
-        <!-- MODAL PARA CREAR CATEGORÍAS -->
-            <div id="categoryModal" class="popover hidden"> <!-- Reutilizamos estilos del popover -->
-                <div class="popover-header">
-                    <h2>Nueva Categoría</h2>
-                    <button class="close-category-btn">&times;</button>
-                </div>
-                <form id="categoryForm">
-                    <div class="form-group">
-                        <label for="catName">Nombre de la Categoría</label>
-                        <input type="text" id="catName" placeholder="Ej: Cardio" required autocomplete="off">
-                    </div>
-                    <input type="hidden" id="catId"> <!-- NUEVO: Campo oculto para saber si editamos -->
-                    <div class="form-group">
-                        <label for="catColor">Color representativo</label>
-                        <input type="color" id="catColor" value="#fff" required>
-                        <button type="submit" class="btn-save">Guardar Categoría</button>
-                    </div>
-                 </form>
+        </div>
+
+        <!-- BARRA DE ACCIONES INFERIOR (SHIFTER) -->
+        <footer class="bottom-action-bar">
+            <button class="action-tab active" id="tabModeEdit">
+                <span class="tab-icon">✏️</span>
+                <span class="tab-label">EDITAR</span>
+            </button>
+            <button class="action-tab" id="tabModePaint">
+                <span class="tab-icon">🎨</span>
+                <span class="tab-label">PINTAR</span>
+            </button>
+            <button class="action-tab" id="tabModeSummary">
+                <span class="tab-icon">📊</span>
+                <span class="tab-label">RESUMEN</span>
+            </button>
+        </footer>
+    </div>
+
+    <!-- MODAL CATEGORÍAS -->
+    <div id="categoryModal" class="popover hidden">
+        <div class="popover-header">
+            <h2>Gestión de Categoría</h2>
+            <button class="close-category-btn">&times;</button>
+        </div>
+        <form id="categoryForm">
+            <input type="hidden" id="catId">
+            <div class="form-group">
+                <label for="catName">Nombre (Ej: Trabajo, Día de franco, Noche)</label>
+                <input type="text" id="catName" required autocomplete="off">
             </div>
-        <!-- ==========================================
-         MODAL DE ALERTA Y CONFIRMACIÓN
-         ========================================== -->
-        <div id="confirmModal" class="overlay-modal hidden">
-            <div class="overlay-content">
-                <h2 id="confirmTitle">Confirmación</h2>
-                <p id="confirmMessage" style="margin: 15px 0; color: var(--text-secondary);"></p>
-                <div class="form-actions" style="justify-content: center; margin-top: 20px;">
-                    <button class="btn-save" id="btnConfirmOk">Aceptar</button>
-                    <button class="btn-delete" id="btnConfirmCancel">Cancelar</button>
-                </div>
+            <div class="form-group">
+                <label for="catColor">Color</label>
+                <input type="color" id="catColor" value="#1a73e8" required>
+            </div>
+            <button type="submit" class="btn-save">Guardar Categoría</button>
+        </form>
+    </div>
+
+    <!-- MODAL RESUMEN MENSUAL -->
+    <div id="summaryModal" class="overlay-modal hidden">
+        <div class="overlay-content summary-content">
+            <div class="popover-header">
+                <h2>Resumen Mensual</h2>
+                <button class="close-summary-btn">&times;</button>
+            </div>
+            <p id="summaryMonthText" class="summary-subtitle"></p>
+            <div id="summaryStatsList" class="summary-stats-grid"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div id="confirmModal" class="overlay-modal hidden">
+        <div class="overlay-content">
+            <h2 id="confirmTitle">Confirmación</h2>
+            <p id="confirmMessage" style="margin: 15px 0; color: var(--text-secondary);"></p>
+            <div class="form-actions" style="justify-content: center; margin-top: 20px;">
+                <button class="btn-save" id="btnConfirmOk">Aceptar</button>
+                <button class="btn-delete" id="btnConfirmCancel">Cancelar</button>
             </div>
         </div>
-    </div> <!-- Cierre app-container -->  
-    <script src="src/js/calendar.js"></script>
+    </div>
+
+    <script type="module" src="src/js/calendar.js"></script>
 </body>
 </html>
