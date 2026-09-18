@@ -155,65 +155,101 @@ function renderCalendar() {
     const prevLastDay = new Date(currentYear, currentMonth, 0).getDate();
     const today = new Date();
 
+    // DÍAS DEL MES ANTERIOR
+    const prevMonthDate = new Date(currentYear, currentMonth, 0);
+    const prevMonthNum = prevMonthDate.getMonth() + 1;
+    const prevYearNum = prevMonthDate.getFullYear();
+
     for (let x = firstDayIndex; x > 0; x--) {
-        const dayCell = document.createElement('div');
-        dayCell.classList.add('day-cell', 'inactive-month');
-        dayCell.innerHTML = `<span class="date">${prevLastDay - x + 1}</span>`;
+        const dayNum = prevLastDay - x + 1;
+        const cellDateStr = `${prevYearNum}-${String(prevMonthNum).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+        
+        const dayCell = createDayCell(dayNum, cellDateStr, true);
         monthGrid.appendChild(dayCell);
     }
 
+    // DÍAS DEL MES ACTUAL
     for (let i = 1; i <= lastDay; i++) {
-        const dayCell = document.createElement('div');
-        dayCell.classList.add('day-cell');
         const cellDateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        const isToday = (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear());
+        
+        const dayCell = createDayCell(i, cellDateStr, false, isToday);
+        monthGrid.appendChild(dayCell);
+    }
 
-        dayCell.addEventListener('click', (e) => {
-            if (currentMode === 'paint') handlePaintClick(cellDateStr);
-            else openPopover(e, cellDateStr);
-        });
+    // DÍAS DEL MES SIGUIENTE
+    const nextMonthDate = new Date(currentYear, currentMonth + 1, 1);
+    const nextMonthNum = nextMonthDate.getMonth() + 1;
+    const nextYearNum = nextMonthDate.getFullYear();
 
-        if (i === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
-            dayCell.classList.add('today');
-            dayCell.innerHTML = `<span class="date active-circle">${i}</span>`;
-        } else {
-            dayCell.innerHTML = `<span class="date">${i}</span>`;
+    // AQUÍ VA EL BLOQUE DINÁMICO
+    const totalCells = monthGrid.children.length;
+    const targetTotalCells = totalCells > 35 ? 42 : 35; // Define 5 o 6 filas dinámicamente
+    const remainingCells = targetTotalCells - totalCells;
+
+    for (let j = 1; j <= remainingCells; j++) {
+        const cellDateStr = `${nextYearNum}-${String(nextMonthNum).padStart(2, '0')}-${String(j).padStart(2, '0')}`;
+        const dayCell = createDayCell(j, cellDateStr, true);
+        monthGrid.appendChild(dayCell);
+    }
+} // <-- AQUÍ CIERRA renderCalendar()
+
+// FUNCIÓN AUXILIAR (Fuera de renderCalendar)
+function createDayCell(dayNumber, cellDateStr, isInactive = false, isToday = false) {
+    const dayCell = document.createElement('div');
+    dayCell.classList.add('day-cell');
+    if (isInactive) dayCell.classList.add('inactive-month');
+    if (isToday) dayCell.classList.add('today');
+
+    const cellHeader = document.createElement('div');
+    cellHeader.className = 'day-cell-header';
+
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'date';
+    if (isToday) dateSpan.classList.add('active-circle');
+    dateSpan.textContent = dayNumber;
+
+    cellHeader.appendChild(dateSpan);
+    dayCell.appendChild(cellHeader);
+
+    const eventsContainer = document.createElement('div');
+    eventsContainer.className = 'events-container';
+
+    const dayEvents = events.filter(e => e.date === cellDateStr && enabledCategories.has(e.categoryId));
+
+    dayEvents.forEach(evt => {
+        const eventChip = document.createElement('div');
+        eventChip.classList.add('event-chip');
+
+        const categoryObj = categories.find(c => c.id === evt.categoryId);
+        if (categoryObj) {
+            eventChip.style.backgroundColor = categoryObj.color;
+            eventChip.style.color = '#ffffff';
         }
 
-        const dayEvents = events.filter(e => e.date === cellDateStr && enabledCategories.has(e.categoryId));
+        eventChip.textContent = evt.start ? `${evt.start} | ${evt.title}` : evt.title;
 
-        dayEvents.forEach(evt => {
-            const eventChip = document.createElement('div');
-            eventChip.classList.add('event-chip');
-            const categoryObj = categories.find(c => c.id === evt.categoryId);
-            
-            if (categoryObj) {
-                eventChip.style.backgroundColor = categoryObj.color;
-                eventChip.style.color = '#ffffff'; 
+        eventChip.addEventListener('click', (e) => {
+            if (currentMode === 'edit') {
+                e.stopPropagation();
+                openPopoverForEdit(e, evt);
             }
-
-            eventChip.textContent = evt.start ? `${evt.start} | ${evt.title}` : evt.title;
-            
-            eventChip.addEventListener('click', (e) => {
-                if (currentMode === 'edit') {
-                    e.stopPropagation();
-                    openPopoverForEdit(e, evt);
-                }
-            });
-            
-            dayCell.appendChild(eventChip);
         });
 
-        monthGrid.appendChild(dayCell);
-    }
+        eventsContainer.appendChild(eventChip);
+    });
 
-    const totalCells = monthGrid.children.length;
-    const remainingCells = 42 - totalCells;
-    for (let j = 1; j <= remainingCells; j++) {
-        const dayCell = document.createElement('div');
-        dayCell.classList.add('day-cell', 'inactive-month');
-        dayCell.innerHTML = `<span class="date">${j}</span>`;
-        monthGrid.appendChild(dayCell);
-    }
+    dayCell.appendChild(eventsContainer);
+
+    dayCell.addEventListener('click', (e) => {
+        if (currentMode === 'paint') {
+            handlePaintClick(cellDateStr);
+        } else {
+            openPopover(e, cellDateStr);
+        }
+    });
+
+    return dayCell;
 }
 
 async function handlePaintClick(dateStr) {

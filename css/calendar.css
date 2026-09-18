@@ -2,13 +2,13 @@
    1. VARIABLES Y RESETEO BÁSICO
    ========================================= */
 :root {
-    --bg-dark: #202124;         /* Fondo principal oscuro */
-    --surface-dark: #2b2c31;    /* Fondo de elementos elevados */
-    --border-color: #5f6368;    /* Color de las líneas de la cuadrícula */
-    --text-primary: #e8eaed;    /* Texto principal (blanco/grisáceo) */
-    --text-secondary: #9aa0a6;  /* Texto secundario (gris) */
-    --accent-blue: #8ab4f8;     /* Azul de selección/Hoy */
-    --today-bg: #1a73e8;        /* Azul oscuro para el círculo del día de hoy */
+    --bg-dark: #202124;
+    --surface-dark: #2b2c31;
+    --border-color: #5f6368;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --accent-blue: #8ab4f8;
+    --today-bg: #1a73e8;
     --bottom-bar-height: 56px;
     --top-bar-height: 64px;
 }
@@ -18,24 +18,25 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    -webkit-tap-highlight-color: transparent; /* Elimina recuadro azul al tocar en celular */
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
     height: 100vh;
-    height: 100dvh; /* Altura dinámica real en navegadores móviles */
+    height: 100dvh;
     overflow: hidden;
 }
 
 /* =========================================
-   2. ESTRUCTURA GENERAL (LAYOUT)
+   2. ESTRUCTURA GENERAL Y BARRA SUPERIOR
    ========================================= */
 .app-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
 }
 
 .top-bar {
@@ -46,28 +47,9 @@ body {
     border-bottom: 1px solid var(--border-color);
     height: var(--top-bar-height);
     background-color: var(--bg-dark);
+    flex-shrink: 0;
 }
 
-.main-content {
-    display: flex;
-    flex: 1;
-    height: calc(100dvh - var(--top-bar-height) - var(--bottom-bar-height));
-    position: relative;
-    overflow: hidden;
-}
-
-/* =========================================
-   3. BARRA LATERAL (SIDEBAR)
-   ========================================= */
-.sidebar {
-    width: 256px;
-    padding: 16px;
-    border-right: 1px solid var(--border-color);
-    overflow-y: auto;
-    background-color: var(--bg-dark);
-    transition: transform 0.3s ease;
-}
-/* Centrado horizontal sin desbordamiento */
 .top-bar-center {
     display: flex;
     align-items: center;
@@ -83,7 +65,68 @@ body {
     margin: 0;
 }
 
-/* Transición suave para ocultar/mostrar la barra lateral */
+.btn-menu, 
+.btn-nav {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid transparent;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-menu:hover, 
+.btn-nav:hover {
+    background-color: var(--surface-dark);
+    border-color: var(--border-color);
+}
+
+.btn-today {
+    background-color: var(--surface-dark);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-today:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.view-selector {
+    background-color: var(--surface-dark);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+/* =========================================
+   3. BARRA LATERAL (SIDEBAR)
+   ========================================= */
 .sidebar {
     width: 256px;
     padding: 16px;
@@ -91,6 +134,7 @@ body {
     overflow-y: auto;
     background-color: var(--bg-dark);
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .sidebar.collapsed {
@@ -132,436 +176,6 @@ body {
 }
 .calendar-list li { margin-bottom: 12px; }
 
-/* =========================================
-   4. CUADRÍCULA DEL CALENDARIO (GRID)
-   ========================================= */
-.calendar-month-view {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-}
-
-.month-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.month-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: 1fr;
-    flex: 1;
-    overflow-y: auto;
-}
-
-.day-cell {
-    border-right: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 4px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 0;
-    overflow: hidden;
-}
-
-.day-cell.inactive-month .date { color: var(--text-secondary); opacity: 0.5; }
-
-/* =========================================
-   5. DÍA ACTUAL (HOY) Y EVENTOS
-   ========================================= */
-.date {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    margin-bottom: 4px;
-    font-size: 12px;
-}
-
-.today .active-circle {
-    background-color: var(--today-bg);
-    color: white;
-    font-weight: bold;
-}
-
-/* Tarjetas de eventos (Chips) */
-.event-chip {
-    width: 100%;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-    margin-bottom: 2px;
-    cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background-color: var(--accent-blue);
-    color: var(--bg-dark);
-    font-weight: 500;
-}
-
-/* =========================================
-   6. POPOVER Y MODALES RESPONSIVOS
-   ========================================= */
-.popover, .overlay-modal {
-    z-index: 2000;
-}
-
-.popover {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--surface-dark);
-    padding: 20px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    max-height: 85dvh;
-    overflow-y: auto;
-    box-shadow: 0 12px 28px rgba(0,0,0,0.8);
-    border: 1px solid var(--border-color);
-}
-
-.popover.hidden, .overlay-modal.hidden, .paint-palette.hidden {
-    display: none !important;
-}
-
-.popover-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-}
-
-.popover-header h2 { font-size: 18px; font-weight: 500; }
-
-.close-btn, .close-summary-btn {
-    background: none; 
-    border: none;
-    color: var(--text-secondary);
-    font-size: 24px; 
-    cursor: pointer;
-    padding: 4px;
-}
-
-.close-btn:hover, .close-summary-btn:hover { color: white; }
-
-.form-group { margin-bottom: 14px; display: flex; flex-direction: column; }
-.time-group { flex-direction: row; gap: 12px; }
-.time-group > div { flex: 1; display: flex; flex-direction: column; }
-
-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-
-input, textarea, select {
-    background-color: var(--bg-dark);
-    border: 1px solid var(--border-color);
-    color: white; 
-    padding: 10px;
-    border-radius: 6px; 
-    outline: none;
-    font-size: 14px;
-}
-
-input:focus, textarea:focus, select:focus { border-color: var(--accent-blue); }
-
-.title-input {
-    font-size: 16px;
-    border: none;
-    border-bottom: 2px solid var(--border-color);
-    border-radius: 0;
-    padding-left: 0;
-    background: transparent;
-}
-.title-input:focus { border-bottom: 2px solid var(--accent-blue); }
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-}
-
-.btn-save {
-    background-color: var(--accent-blue);
-    color: var(--bg-dark);
-    border: none; 
-    padding: 12px;
-    border-radius: 6px;
-    font-weight: 600; 
-    cursor: pointer;
-    flex: 2;
-}
-
-.btn-delete {
-    background-color: #e57373;
-    color: white;
-    border: none; 
-    padding: 12px; 
-    border-radius: 6px;
-    font-weight: 600; 
-    cursor: pointer; 
-    flex: 1;
-}
-
-.btn-save:hover { background-color: #aecbfa; }
-.btn-delete:hover { background-color: #ef5350; }
-
-/* Modal Overlay */
-.overlay-modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.overlay-content {
-    background-color: var(--surface-dark);
-    padding: 20px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 400px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.8);
-    text-align: center;
-}
-
-/* =========================================
-   7. GESTIÓN DE CATEGORÍAS & PALETA DE PINTADO
-   ========================================= */
-.btn-new-category {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    margin-top: 8px;
-    font-size: 13px;
-}
-
-.category-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.category-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-}
-
-.color-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    display: inline-block;
-}
-
-.cat-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.btn-edit-cat, .btn-delete-cat {
-    background: none; 
-    border: none; 
-    cursor: pointer; 
-    font-size: 14px;
-}
-
-input[type="color"] {
-    padding: 0;
-    border: none;
-    width: 100%;
-    height: 40px;
-    cursor: pointer;
-    background-color: transparent;
-}
-
-/* Paleta Modo Pintar */
-.paint-palette {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: var(--surface-dark);
-    border-top: 1px solid var(--border-color);
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    z-index: 1000;
-    overflow-x: auto;
-}
-
-.palette-title {
-    font-size: 12px;
-    color: var(--text-secondary);
-    white-space: nowrap;
-}
-
-.palette-chips {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-}
-
-.preset-chip {
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 2px solid transparent;
-    white-space: nowrap;
-    opacity: 0.75;
-    transition: transform 0.1s ease, opacity 0.2s ease;
-}
-
-.preset-chip:hover, .preset-chip.selected {
-    opacity: 1;
-    border-color: #ffffff;
-}
-
-body.mode-paint .day-cell:hover {
-    cursor: pointer;
-    background-color: rgba(138, 180, 248, 0.15);
-    outline: 2px dashed var(--accent-blue);
-}
-
-/* =========================================
-   8. BARRA DE ACCIONES INFERIOR Y RESUMEN
-   ========================================= */
-.bottom-action-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: var(--bottom-bar-height);
-    background-color: #18191c;
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 1500;
-    padding-bottom: env(safe-area-inset-bottom); /* Compatible con iPhone/Android gesture bar */
-}
-
-.action-tab {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    height: 100%;
-    cursor: pointer;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.action-tab .tab-icon { font-size: 16px; margin-bottom: 2px; }
-
-.action-tab.active {
-    color: var(--accent-blue);
-    border-top: 3px solid var(--accent-blue);
-    background-color: rgba(138, 180, 248, 0.08);
-}
-
-/* Modal Resumen */
-.summary-content { max-width: 480px; }
-.summary-subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
-.summary-stats-grid { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--bg-dark);
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
-
-.stat-info { display: flex; align-items: center; gap: 10px; }
-.stat-badge { width: 12px; height: 12px; border-radius: 50%; }
-.stat-name { font-size: 13px; font-weight: 500; }
-.stat-count { font-weight: bold; font-size: 14px; color: var(--accent-blue); }
-
-/* =========================================
-   BOTONES DE NAVEGACIÓN SUPERIOR (TOP BAR)
-   ========================================= */
-.btn-menu, 
-.btn-nav {
-    background-color: transparent;
-    color: var(--text-primary);
-    border: 1px solid transparent;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.btn-menu:hover, 
-.btn-nav:hover {
-    background-color: var(--surface-dark);
-    border-color: var(--border-color);
-}
-
-.btn-today {
-    background-color: var(--surface-dark);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 6px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-right: 8px;
-    transition: all 0.2s ease;
-}
-
-.btn-today:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-color: var(--accent-blue);
-    color: var(--accent-blue);
-}
-
-.view-selector {
-    background-color: var(--surface-dark);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    outline: none;
-}
-
-/* =========================================
-   BOTONES DE SIDEBAR (BACKUP Y CATEGORÍAS)
-   ========================================= */
 .sidebar-backup-section {
     margin-top: 20px;
     padding-top: 15px;
@@ -571,6 +185,7 @@ body.mode-paint .day-cell:hover {
 .sidebar-backup-section .backup-content {
     margin-top: 10px;
 }
+
 .btn-backup {
     width: 100%;
     padding: 9px;
@@ -618,9 +233,460 @@ body.mode-paint .day-cell:hover {
     border-color: var(--accent-blue);
     background-color: rgba(138, 180, 248, 0.08);
 }
+
 /* =========================================
-   9. ADAPTACIONES MÓVILES (@MEDIA QUERIES)
+   4. ENCABEZADO Y CUADRÍCULA DEL MES
    ========================================= */
+.calendar-month-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.month-header {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-dark);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.day-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+}
+
+.month-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    grid-auto-rows: 1fr !important;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.day-cell {
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.day-cell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 4px;
+    z-index: 2;
+}
+
+.events-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 2px;
+    width: 100%;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* =========================================
+   5. DÍA ACTUAL Y TARJETAS DE EVENTO (CHIPS)
+   ========================================= */
+.date {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+.today .active-circle {
+    background-color: var(--today-bg);
+    color: white;
+    font-weight: bold;
+}
+
+.event-chip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 4px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.event-chip:hover {
+    filter: brightness(1.15);
+    transform: scale(0.99);
+}
+
+.event-chip.is-appointment {
+    font-weight: 700;
+}
+
+/* =========================================
+   6. CATEGORÍAS Y PALETA DE MODO PINTAR
+   ========================================= */
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.category-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.cat-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-edit-cat, 
+.btn-delete-cat {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+input[type="color"] {
+    padding: 0;
+    border: none;
+    width: 100%;
+    height: 40px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.paint-palette {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--surface-dark);
+    border-top: 1px solid var(--border-color);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+    overflow-x: auto;
+}
+
+.palette-title {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.palette-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+}
+
+.preset-chip {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    opacity: 0.75;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.preset-chip:hover, 
+.preset-chip.selected {
+    opacity: 1;
+    border-color: #ffffff;
+}
+
+body.mode-paint .day-cell:hover {
+    cursor: pointer;
+    background-color: rgba(138, 180, 248, 0.15);
+    outline: 2px dashed var(--accent-blue);
+}
+
+/* =========================================
+   7. POPOVERS Y MODALES RESPONSIVOS
+   ========================================= */
+.popover, 
+.overlay-modal {
+    z-index: 2000;
+}
+
+.popover {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--surface-dark);
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 85dvh;
+    overflow-y: auto;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.8);
+    border: 1px solid var(--border-color);
+}
+
+.popover.hidden, 
+.overlay-modal.hidden, 
+.paint-palette.hidden {
+    display: none !important;
+}
+
+.popover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.popover-header h2 { font-size: 18px; font-weight: 500; }
+
+.close-btn, 
+.close-summary-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.close-btn:hover, 
+.close-summary-btn:hover { color: white; }
+
+.form-group { margin-bottom: 14px; display: flex; flex-direction: column; }
+.time-group { flex-direction: row; gap: 12px; }
+.time-group > div { flex: 1; display: flex; flex-direction: column; }
+
+label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+
+input, textarea, select {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus, textarea:focus, select:focus { border-color: var(--accent-blue); }
+
+.title-input {
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    border-radius: 0;
+    padding-left: 0;
+    background: transparent;
+}
+.title-input:focus { border-bottom: 2px solid var(--accent-blue); }
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.btn-save {
+    background-color: var(--accent-blue);
+    color: var(--bg-dark);
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 2;
+}
+
+.btn-delete {
+    background-color: #e57373;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+}
+
+.btn-save:hover { background-color: #aecbfa; }
+.btn-delete:hover { background-color: #ef5350; }
+
+.overlay-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay-content {
+    background-color: var(--surface-dark);
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.8);
+    text-align: center;
+}
+
+.summary-content { max-width: 480px; }
+.summary-subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+.summary-stats-grid { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-dark);
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.stat-info { display: flex; align-items: center; gap: 10px; }
+.stat-badge { width: 12px; height: 12px; border-radius: 50%; }
+.stat-name { font-size: 13px; font-weight: 500; }
+.stat-count { font-weight: bold; font-size: 14px; color: var(--accent-blue); }
+
+/* =========================================
+   8. BARRA DE ACCIONES INFERIOR (SHIFTER)
+   ========================================= */
+.bottom-action-bar {
+    position: relative;
+    flex-shrink: 0;
+    height: var(--bottom-bar-height);
+    width: 100%;
+    background-color: #18191c;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.action-tab {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.action-tab .tab-icon { font-size: 16px; margin-bottom: 2px; }
+
+.action-tab:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.action-tab.active {
+    color: var(--accent-blue);
+    border-top: 3px solid var(--accent-blue);
+    background-color: rgba(138, 180, 248, 0.08);
+}
+
+/* =========================================
+   9. MESES ADYACENTES Y RESPONSIVIDAD MÓVIL
+   ========================================= */
+.day-cell.inactive-month {
+    background-color: rgba(0, 0, 0, 0.35);
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(255, 255, 255, 0.015) 8px,
+        rgba(255, 255, 255, 0.015) 16px
+    );
+}
+
+.day-cell.inactive-month .date {
+    color: var(--text-secondary);
+    opacity: 0.35;
+    font-weight: normal;
+}
+
+.day-cell.inactive-month .event-chip {
+    opacity: 0.7;
+    filter: grayscale(20%);
+}
+
+.day-cell.inactive-month .event-chip:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+}
+
+.day-cell.inactive-month:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
 @media (max-width: 768px) {
     .sidebar {
         position: absolute;
@@ -628,12 +694,12 @@ body.mode-paint .day-cell:hover {
         top: 0;
         height: 100%;
         z-index: 1100;
-        transform: translateX(-100%); /* Oculta barra lateral en móviles por defecto */
+        transform: translateX(-100%);
         box-shadow: 4px 0 12px rgba(0,0,0,0.5);
     }
 
     .sidebar.open {
-        transform: translateX(0); /* Muestra sidebar al abrir menú */
+        transform: translateX(0);
     }
 
     .month-header { font-size: 10px; padding: 4px 0; }
@@ -645,7 +711,6 @@ body.mode-paint .day-cell:hover {
         padding: 2px 4px;
     }
 
-    /* Evita auto-zoom en iPhone al tocar campos */
     input, textarea, select {
         font-size: 16px !important;
     }
